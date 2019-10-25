@@ -1,0 +1,14 @@
+Maria Fernanda Machado
+Manuel Guillermo Gil
+
+Códigos PostgresSQL para crear la Base de Datos del Proyecto 1 (Transporte Estudiantil) de la materia de Bases de Datos. Sept. - Dic. 2019
+
+
+CREATE USER te_admin PASSWORD 'te_admin';
+CREATE DATABASE transporte_estudiantil_db WITH OWNER te_admin;
+GRANT ALL PRIVILEGES ON DATABASE transporte_estudiantil_db TO te_admin;
+ALTER ROLE te_admin WITH SUPERUSER 
+
+CREATE table estudiantes(Carnet int primary key not null,Nombre Completo not null,Cédula int not null);
+
+copy estudiantes (Carnet, Nombre) from '~/Development/transporte-estudiantil/Censo_Estudiantes_Litoral.csv' delimiter ',' csv header;

@@ -280,4 +280,60 @@ SET
 
 
 --- 1. ¿Quiénes son los estudiantes que sabemos necesitan llegar en el Transporte Universitario
--- a las 8:00 los jueves desde cada parada (por tener clase)?
+-- a las 8:00 los jueves desde cada parada (por tener clase)?: 134
+SELECT DISTINCT * 
+FROM "Estudiantes"
+JOIN "Inscribe" ON "Inscribe"."Inicio" = '1' AND "Inscribe"."Dia" = 'Jueves' AND "Inscribe"."Estudiante" = "Estudiantes"."Carnet"
+WHERE "Estudiantes"."Transporte" = 'Transporte Universitario';
+
+-- 2. ¿Cuántos estudiantes adicionales se pueden esperar en cada parada a esa hora?
+ALTER TABLE "Horario"
+	 RENAME TO "Horario de Llegada por dia";
+
+ALTER TABLE "Horario_Asignado"
+	 RENAME TO "Horario de Llegada";
+
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 1" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 2" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 3" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 4" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 5" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 6" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 7" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 8" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 9" set data type character varying(100);
+ALTER TABLE "Horario de Llegada por dia" alter column "Hora 10" set data type character varying(100);
+
+ALTER TABLE "Horario de Llegada por dia"
+	 RENAME COLUMN "Hora 1" TO "Estudiante";
+ALTER TABLE "Horario de Llegada por dia"
+    ADD CONSTRAINT FKEstudiante
+    FOREIGN KEY("Estudiante")
+    REFERENCES "Estudiantes" ("Carnet");
+ALTER TABLE "Horario de Llegada por dia"
+	 RENAME COLUMN "Hora 2" TO "Lunes";
+ALTER TABLE "Horario de Llegada por dia"
+	 RENAME COLUMN "Hora 3" TO "Martes";
+ALTER TABLE "Horario de Llegada por dia"
+	 RENAME COLUMN "Hora 4" TO "Miercoles";
+ALTER TABLE "Horario de Llegada por dia"
+	 RENAME COLUMN "Hora 5" TO "Jueves";
+ALTER TABLE "Horario de Llegada por dia"
+	 RENAME COLUMN "Hora 6" TO "Viernes";
+ALTER TABLE "Horario de Llegada por dia"
+  DROP COLUMN "Hora 7";
+ALTER TABLE "Horario de Llegada por dia"
+  DROP COLUMN "Hora 8";
+ALTER TABLE "Horario de Llegada por dia"
+  DROP COLUMN "Hora 9";
+ALTER TABLE "Horario de Llegada por dia"
+  DROP COLUMN "Hora 10";
+
+DROP TABLE "Horario de Llegada";
+
+-- Llenamos los valores de Horario de Llegada 
+INSERT INTO "Horario de Llegada por dia"("Estudiante", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes")
+    SELECT DISTINCT "Carnet", "Hora a la que llega a la universidad [Lunes]", "Hora a la que llega a la universidad [Martes]", "Hora a la que llega a la universidad", "Hora a la que llega a la universidad [Jueves]", "Hora a la que llega a la universidad [Viernes]"
+    FROM "Censo";
+
+

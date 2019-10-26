@@ -247,3 +247,37 @@ FROM (
 WHERE 
     c."CARNET" = "Estudiantes"."Carnet";
 
+-- Llenamos la tabla de Inscribe ya que es la data de los Estudiantes con las materias que tienen inscritas
+INSERT INTO "Inscribe"("Inicio", "Fin", "Dia", "Estudiante", "Materia")
+    SELECT "hora_inicio", "hora_fin", "dia", "CARNET", "CODIGO_MATERIA"
+	FROM "Horarios Litoral";
+
+-- Vamos a reemplazar los valores [1,2,3,4,5] por [Lunes, Martes, Miercoles, Jueves, Viernes] respectivamente
+UPDATE 
+"Inscribe"
+SET 
+"Dia" = REPLACE("Dia",'1','Lunes');
+
+UPDATE 
+"Inscribe"
+SET 
+"Dia" = REPLACE("Dia",'2','Martes');
+
+UPDATE 
+"Inscribe"
+SET 
+"Dia" = REPLACE("Dia",'3','Miercoles');
+
+UPDATE 
+"Inscribe"
+SET 
+"Dia" = REPLACE("Dia",'4','Jueves');
+
+UPDATE 
+"Inscribe"
+SET 
+"Dia" = REPLACE("Dia",'5','Viernes');
+
+
+--- 1. ¿Quiénes son los estudiantes que sabemos necesitan llegar en el Transporte Universitario
+-- a las 8:00 los jueves desde cada parada (por tener clase)?

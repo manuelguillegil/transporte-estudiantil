@@ -336,4 +336,23 @@ INSERT INTO "Horario de Llegada por dia"("Estudiante", "Lunes", "Martes", "Mierc
     SELECT DISTINCT "Carnet", "Hora a la que llega a la universidad [Lunes]", "Hora a la que llega a la universidad [Martes]", "Hora a la que llega a la universidad", "Hora a la que llega a la universidad [Jueves]", "Hora a la que llega a la universidad [Viernes]"
     FROM "Censo";
 
+-- Script para responder la pregunta #2: 146 en total. Se esperan 117 estudiantes más adicionales
+-- Son 247 los estudiantes que los Jueves se van en transporte antes de las 8 a.m o a las 8 a.m.
+-- Pero de esos 247, son 117 que suben que no tienen clases a esa hora
+SELECT DISTINCT * 
+FROM "Estudiantes"
+INNER JOIN "Horario de Llegada por dia" ON 
+("Horario de Llegada por dia"."Jueves" = '8 a. m.' 
+ OR "Horario de Llegada por dia"."Jueves" = 'Antes de las 8 a. m.') 
+ AND "Horario de Llegada por dia"."Estudiante" = "Estudiantes"."Carnet"
+LEFT JOIN "Inscribe" ON
+	"Inscribe"."Inicio" = '1' 
+	AND "Inscribe"."Dia" = 'Jueves' 
+	AND "Inscribe"."Estudiante" = "Estudiantes"."Carnet"
+	AND "Inscribe"."Estudiante" = "Horario de Llegada por dia"."Estudiante"
+WHERE "Estudiantes"."Transporte" = 'Transporte Universitario' AND
+"Inscribe"."Estudiante" IS NULL;
 
+
+-- 3. ¿Cuántos estudiantes deben llegar los jueves en Transporte Universitario a cada hora de
+-- cada cohorte? (es decir, cuál cohorte es la mayor usuaria del Transporte Universitario)

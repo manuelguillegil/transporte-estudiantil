@@ -356,3 +356,29 @@ WHERE "Estudiantes"."Transporte" = 'Transporte Universitario' AND
 
 -- 3. ¿Cuántos estudiantes deben llegar los jueves en Transporte Universitario a cada hora de
 -- cada cohorte? (es decir, cuál cohorte es la mayor usuaria del Transporte Universitario)
+
+-- Cohorte 16:
+SELECT DISTINCT * 
+FROM "Estudiantes"
+-- INNER JOIN "Horario de Llegada por dia" ON 
+-- ("Horario de Llegada por dia"."Jueves" = '8 a. m.' 
+-- OR "Horario de Llegada por dia"."Jueves" = 'Antes de las 8 a. m.') 
+-- AND "Horario de Llegada por dia"."Estudiante" = "Estudiantes"."Carnet"
+FULL OUTER JOIN "Inscribe" ON
+--	"Inscribe"."Inicio" = '1' AND 
+	"Inscribe"."Dia" = 'Jueves' 
+	AND "Inscribe"."Estudiante" = "Estudiantes"."Carnet"
+--	AND "Inscribe"."Estudiante" = "Horario de Llegada por dia"."Estudiante"
+WHERE "Estudiantes"."Transporte" = 'Transporte Universitario'
+AND "Estudiantes"."Carnet" > '1600000' AND "Estudiantes"."Carnet" < '1700000'
+AND "Inscribe"."Dia" IS NOT NULL;
+
+-- 4. ¿Cuántos estudiantes se pueden esperar que usen el transporte universitario ese día?
+
+SELECT DISTINCT * 
+FROM "Estudiantes"
+FULL OUTER JOIN "Inscribe" ON
+	"Inscribe"."Dia" = 'Jueves' 
+	AND "Inscribe"."Estudiante" = "Estudiantes"."Carnet"
+WHERE "Estudiantes"."Transporte" = 'Transporte Universitario'
+AND "Inscribe"."Dia" IS NOT NULL;

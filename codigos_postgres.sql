@@ -159,6 +159,24 @@ INSERT INTO "Transporte"("Tipo")
 DELETE FROM "Transporte"
     WHERE "Tipo" = 'Medio de Transporte';
 
+-- Materias
+INSERT INTO "Materia"("Codigo")
+    SELECT DISTINCT "CODIGO_MATERIA"
+    FROM "Horarios Litoral";
+
+-- Actualizamos los demás campos de las Materias
+ALTER TABLE "Materia" alter column "Descripcion" set data type character varying(100);
+
+UPDATE "Materia" 
+SET 
+    "Descripcion" = c."DESCRIPCION",
+	"Creditos" = c."creditos"
+FROM (
+    SELECT "CODIGO_MATERIA", "DESCRIPCION", "creditos"
+    FROM "Horarios Litoral") c
+WHERE 
+    c."CODIGO_MATERIA" = "Materia"."Codigo";
+
 -- Se eliminan estas dos columnas ya que como varios Estudiantes pueden tener el mismo horario, y el mismo horario puede estar asignado
 -- a varios estudiantes, entonces se creará otra tabla llamada Asignacion_Horario el cual corresponde a la relación entre Estudiante
 -- y Horario, con una cardinalidad de N a M
@@ -196,3 +214,29 @@ FROM (
     FROM "Censo") c
 WHERE 
     c."Carnet" = "Estudiantes"."Carnet";
+
+-- Eliminamos el '-' en los carnets
+UPDATE 
+"Estudiantes"
+SET 
+"Carnet" = REPLACE("Carnet",'-','');
+
+-- Eliminamos una fila innecesaria en Horarios Litoral
+DELETE FROM "Horarios Litoral" WHERE "Horarios Litoral"."CARNET" = 'CARNET';
+
+-- Actualizamos los nombres y cedula de los estudiantes que están en Horario Litoral pero no en Censo Estudiantes
+UPDATE "Estudiantes" 
+SET 
+    "Nombre" = c."NOMBRES",
+	"Cedula" = c."CEDULA"
+FROM (
+    SELECT "CARNET", "NOMBRES", "CEDULA"
+    FROM "Horarios Litoral") c
+WHERE 
+    c."CARNET" = "Estudiantes"."Carnet";
+
+-- Insertamos los estudiantes en Horario Litoral que no están en Censo Estudiantes
+INSERT INTO "Estudiantes"("Carnet")
+    SELECT DISTINCT "Carnet"
+    FROM "Horario Litoral"
+    WHERE "Estudiantes"("Carnet") <> "Horario Litoral"("CARNET");

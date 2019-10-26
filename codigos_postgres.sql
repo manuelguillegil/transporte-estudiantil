@@ -224,6 +224,18 @@ SET
 -- Eliminamos una fila innecesaria en Horarios Litoral
 DELETE FROM "Horarios Litoral" WHERE "Horarios Litoral"."CARNET" = 'CARNET';
 
+-- Insertamos los estudiantes en Horario Litoral que no están en Censo Estudiantes
+INSERT INTO "Estudiantes"("Carnet")
+    SELECT DISTINCT "CARNET"
+	FROM "Horarios Litoral"
+	WHERE 
+	NOT EXISTS(SELECT DISTINCT
+                "Carnet"
+            FROM 
+                "Estudiantes" 
+            WHERE 
+                "Estudiantes"."Carnet" = "Horarios Litoral"."CARNET");
+
 -- Actualizamos los nombres y cedula de los estudiantes que están en Horario Litoral pero no en Censo Estudiantes
 UPDATE "Estudiantes" 
 SET 
@@ -235,8 +247,3 @@ FROM (
 WHERE 
     c."CARNET" = "Estudiantes"."Carnet";
 
--- Insertamos los estudiantes en Horario Litoral que no están en Censo Estudiantes
-INSERT INTO "Estudiantes"("Carnet")
-    SELECT DISTINCT "Carnet"
-    FROM "Horario Litoral"
-    WHERE "Estudiantes"("Carnet") <> "Horario Litoral"("CARNET");

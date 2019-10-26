@@ -180,7 +180,19 @@ INSERT INTO "Estudiantes"("Carnet")
     SELECT DISTINCT "Carnet"
     FROM "Censo";
 
-INSERT INTO "Estudiantes"("Nombre")
-    SELECT "Nombre Completo"
-    FROM "Censo"
-    WHERE "Estudiantes"."Carnet" = "Censo"."Carnet";
+-- Hay que añadir este valor ya que sino habrá una violación a la clave foranéa de Ruta al actualizar la tabla de estudiantes
+INSERT INTO public."Ruta"(
+	"Nombre", "Tipo")
+	VALUES ('Ruta litoral inactiva', 'Inactivo');
+
+
+-- Actualizamos todos los demás campos que no sean clave principal de la tabla de estudiantes
+UPDATE "Estudiantes" 
+SET "Nombre" = c."Nombre Completo",
+	"Ruta" = c."Ruta",
+	"Transporte" = c."Medio de Transporte"
+FROM (
+    SELECT "Carnet", "Nombre Completo", "Ruta", "Medio de Transporte"
+    FROM "Censo") c
+WHERE 
+    c."Carnet" = "Estudiantes"."Carnet";

@@ -26,7 +26,7 @@ INSERT INTO Materia(Codigo)
 INSERT INTO Estudiantes(Carnet)
     SELECT DISTINCT Carnet
     FROM Censo;
-    
+
 -- Actualizamos los demás campos de las Materias
 ALTER TABLE Materia alter column Descripcion set data type varchar(100) ;
 
@@ -51,6 +51,32 @@ FROM (
     FROM Censo) c
 WHERE 
     c.Carnet = Estudiantes.Carnet;
+
+-- Eliminamos una fila innecesaria en Horarios Litoral
+DELETE FROM Horarios_Litoral WHERE Horarios_Litoral.CARNET = 'CARNET';
+
+-- Insertamos los estudiantes en Horario Litoral que no están en Censo Estudiantes
+INSERT INTO Estudiantes(Carnet)
+    SELECT DISTINCT CARNET
+	FROM Horarios_Litoral
+	WHERE 
+	NOT EXISTS(SELECT DISTINCT
+                Carnet
+            FROM 
+                Estudiantes 
+            WHERE 
+                Estudiantes.Carnet = Horarios_Litoral.CARNET);
+
+-- Actualizamos los nombres y cedula de los estudiantes que están en Horario Litoral pero no en Censo Estudiantes
+UPDATE Estudiantes 
+SET 
+    Nombre = c.NOMBRES,
+	Cedula = c.CEDULA
+FROM (
+    SELECT CARNET, NOMBRES, CEDULA
+    FROM Horarios_Litoral) c
+WHERE 
+    c.CARNET = Estudiantes.Carnet;
 
 
 

@@ -7,6 +7,14 @@
 --			Maria Fernanda Machado      13-10780
 --
 -------------------------------------------------------------------------
+DROP TABLE IF EXISTS Censo ;
+DROP TABLE IF EXISTS Horarios_Litoral;
+--DROP TABLE IF EXISTS Horario;
+DROP TABLE IF EXISTS Inscribe;
+DROP TABLE IF EXISTS Materia;
+DROP TABLE IF EXISTS Estudiantes;
+DROP TABLE IF EXISTS Ruta;
+DROP TABLE IF EXISTS Transporte;
 
 -- Tabla Censo para importar la tabla en excel/cvs a un registro de postgres
 CREATE TABLE Censo (
@@ -47,21 +55,11 @@ CREATE TABLE Horarios_Litoral (
 -- Impoortamos el archivo cvs a la tabla creada
 \copy Horarios_Litoral FROM 'Horarios Litoral.csv' WITH DELIMITER ',' csv header;
 
--- Tabla Horaio
-CREATE TABLE Horario (
-    Id        SERIAL PRIMARY KEY,
-    Hora_1    boolean,
-    Hora_2    boolean,
-    Hora_3    boolean,
-    Hora_4    boolean,
-    Hora_5    boolean,
-    Hora_6    boolean,
-    Hora_7    boolean,
-    Hora_8    boolean,
-    Hora_9    boolean,
-    Hora_10   boolean
+/*CREATE TABLE Horario_Inicio (
+    Estudiante       varchar(50) REFERENCES Estudiantes,
+    Horario          varchar(5)
 );
-
+*/
 -- Tabla Ruta
 CREATE TABLE Ruta (
     Nombre        varchar(50) PRIMARY KEY,
@@ -86,63 +84,57 @@ CREATE TABLE Inscribe (
     Inicio    varchar(50),
     Fin       varchar(50),
     Dia       varchar(50),
-    Materias  varchar(50) REFERENCES Materia
+    Materias  varchar(50) REFERENCES Materia ON DELETE CASCADE
 );
 
 -- Tabla Estudantes
 CREATE TABLE Estudiantes (
     Carnet    varchar(50) PRIMARY KEY,
     Cedula    varchar(50),
-    Nombre    varchar(50)
+    Nombre    varchar(50),
+    Ruta      varchar(50) REFERENCES Ruta(nombre) ON DELETE CASCADE
 );
-
--- Alteramos las tablas para crear claves foranéas
--- Tabla Estudiantes
--- Ruta
-ALTER TABLE Estudiantes
-    ADD COLUMN Ruta varchar(50);
 	
-ALTER TABLE Estudiantes
-    ADD CONSTRAINT FKtest
-    FOREIGN KEY(Ruta)
-    REFERENCES Ruta (Nombre);
-
 -- Horario
-ALTER TABLE Estudiantes
-    ADD COLUMN Horario INTEGER;
 
 --ALTER TABLE Estudiantes
---    ADD COLUMN Horario_dia character varying(50);
+--   ADD COLUMN Horario varchar(5) REFERENCES Horario_Inicio() ON DELETE CASCADE;
+
+--ALTER TABLE Estudiantes
+--    ADD COLUMN Horario_dia varchar(50);
 	
-ALTER TABLE Estudiantes
-    ADD CONSTRAINT FKtestt
-    FOREIGN KEY(Horario)
-    REFERENCES Horario (Id);
+--ALTER TABLE Estudiantes
+--    ADD CONSTRAINT FKtestt
+--    FOREIGN KEY(Horario)
+--    REFERENCES Horario(Id);
 	
 -- Transporte
 ALTER TABLE Estudiantes
-    ADD COLUMN Transporte character varying(50);
+    ADD COLUMN Transporte varchar(50);
 	
 ALTER TABLE Estudiantes
     ADD CONSTRAINT FKtests
     FOREIGN KEY(Transporte)
-    REFERENCES Transporte (Tipo);
+    REFERENCES Transporte (Tipo) ON DELETE CASCADE;
 
 -- Tabla Inscribe
 -- Estudiante
 ALTER TABLE Inscribe
-    ADD COLUMN Estudiante character varying(50);
+    ADD COLUMN Estudiante varchar(50);
 	
 ALTER TABLE Inscribe
     ADD CONSTRAINT FKEstudiante
     FOREIGN KEY(Estudiante)
-    REFERENCES Estudiantes (Carnet);
+    REFERENCES Estudiantes (Carnet) ON DELETE CASCADE;
 
 -- Materia
 ALTER TABLE Inscribe
-    ADD COLUMN Materia character varying(50);
+    ADD COLUMN Materia varchar(50);
 	
 ALTER TABLE Inscribe
     ADD CONSTRAINT FKMateria
     FOREIGN KEY(Materia)
-    REFERENCES Materia (Codigo);
+    REFERENCES Materia (Codigo) ON DELETE CASCADE;
+
+UPDATE Censo SET Carnet = REPLACE(Carnet,'-','');
+UPDATE Censo SET Carnet = SUBSTRING(Carnet, 1,7);

@@ -93,7 +93,7 @@ CREATE TABLE Inscribe (
     carnet_estudiante    VARCHAR(64) NOT NULL
 );
 
--- Horario Llegada
+-- Horario Llegada de los estudiantes
 CREATE TABLE Horario_Llegada (
     dia                  VARCHAR(64) NOT NULL,
     hora                 TIME ,
